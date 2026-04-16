@@ -16,4 +16,8 @@ def genereaza_date_reduse_lasso(predictors, target):
             indices = np.argsort(importance)[-nr_of_features:]
 
             reduced_predictors = predictors[:, indices]
-            return reduced_predictors
+
+            #cumulative variance / treshold /
+
+
+            return reduced_predictors, 

@@ -9,7 +9,7 @@ decision_tree_parameters = {
 '''
 data list sa contina obiecte de tipul:
 {
-    'name': -
+    'name': "PCA -  20 features - variance 95%", || {"name": "PCA", "features": 20, "variance": 0.95}
     'Train_Predictors': -
     'Train_Target': -
     'Test_Predictors': -
