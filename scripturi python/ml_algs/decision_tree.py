@@ -6,8 +6,6 @@ decision_tree_parameters = {
     'min_samples_split': [2, 5, 10]
 }
 
-
-
 '''
 data list sa contina obiecte de tipul:
 {
@@ -51,8 +49,9 @@ def grid_metrics_decision_tree(data_list: list):
                 }
 
                 rows.append(return_object)
-    return rows
 
+
+    return rows
 
 
 
