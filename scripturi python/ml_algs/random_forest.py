@@ -3,7 +3,7 @@ random_forest_parameters = {
     'max_depth': [10, 20, 30, None]
 }
 
-from sklearn.linear_model import RandomForestRegressor
+from sklearn.ensemble import RandomForestRegressor
 from sklearn.metrics import mean_squared_error, f1_score, mean_absolute_error, accuracy_score
 
 '''
