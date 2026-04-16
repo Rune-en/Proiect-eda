@@ -17,7 +17,7 @@ data list sa contina obiecte de tipul:
 
 '''
 
-def grid_metrics_linear_model(data_list: list):
+def grid_metrics_poisson_linear_model(data_list: list):
     rows = []
     for dimension_reduction in data_list:
         for alpha in poisson_linear_model_parameters['alpha']:

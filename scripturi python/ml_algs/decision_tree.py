@@ -18,7 +18,7 @@ data list sa contina obiecte de tipul:
 
 '''
 
-def grid_metrics_decision_tree(data_list: list):
+def grid_metrics_decision_tree_model(data_list: list):
     rows = []
     for dimension_reduction in data_list:
         for max_depth in decision_tree_parameters['max_depth']:
