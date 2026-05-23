@@ -18,7 +18,7 @@ data list sa contina obiecte de tipul:
 
 '''
 
-def grid_metrics_random_forest_model(data_list: list):
+def grid_metrics_random_forest(data_list: list):
     rows = []
     for dimension_reduction in data_list:
             for n_estimators in random_forest_parameters['n_estimators']:
@@ -52,6 +52,10 @@ def grid_metrics_random_forest_model(data_list: list):
 
 
     return rows
+
+
+def grid_metrics_random_forest_model(data_list: list):
+    return grid_metrics_random_forest(data_list)
 
 
 

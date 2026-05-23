@@ -1,23 +1,22 @@
-from sklearn.linear_model import Lasso
 import numpy as np
-
-lasso_regression_parameters = {
-    'nr_of_features': [10, 20, 30, 40, 50],
-    'alpha': [0.1, 0.5, 1.0, 5.0, 10.0]
-}
-
-def genereaza_date_reduse_lasso(predictors, target):
-    for nr_of_features in lasso_regression_parameters['nr_of_features']:
-        for alpha in lasso_regression_parameters['alpha']:
-            model = Lasso(alpha=alpha)
-            model.fit(predictors, target)
-
-            importance = np.abs(model.coef_)
-            indices = np.argsort(importance)[-nr_of_features:]
-
-            reduced_predictors = predictors[:, indices]
-
-            #cumulative variance / treshold /
+from sklearn.linear_model import Lasso
+from sklearn.preprocessing import StandardScaler
 
 
-            return reduced_predictors, 
+def reduce_dimensionality_lasso(X, y, alpha=0.01, max_iter=10000):
+
+    scaler = StandardScaler()
+    X_scaled = scaler.fit_transform(X)
+
+    lasso = Lasso(alpha=alpha, max_iter=max_iter, random_state=42)
+    lasso.fit(X_scaled, y)
+ 
+    selected_features = np.where(lasso.coef_ != 0)[0]
+
+    
+    return  selected_features
+
+
+def genereaza_date_reduse_lasso(predictors, target, alpha=0.01, max_iter=10000):
+    selected = reduce_dimensionality_lasso(predictors, target, alpha=alpha, max_iter=max_iter)
+    return predictors[:, selected], selected
