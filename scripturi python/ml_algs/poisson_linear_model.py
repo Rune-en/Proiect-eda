@@ -22,11 +22,6 @@ data list sa contina obiecte de tipul:
 '''
 
 def grid_metrics_poisson_linear_model(data_list: dict):
-    if isinstance(data_list, list):
-        if len(data_list) != 1:
-            raise ValueError("data_list list input must contain exactly one dataset dict")
-        data_list = data_list[0]
-
     rows = []
     for alpha in poisson_linear_model_parameters['alpha']:
         model = make_pipeline(

@@ -4,11 +4,6 @@ os.environ["LOKY_MAX_CPU_COUNT"] = "8"
 from sklearn.decomposition import PCA
 
 from dimension_reduction import *
-<<<<<<< HEAD
-from ml_algs import *
-from dimension_reduction import *
-import data
-=======
 from ml_algs.decision_tree import grid_metrics_decision_tree
 from ml_algs.random_forest import grid_metrics_random_forest
 from ml_algs.linear_model import grid_metrics_linear_model
@@ -21,19 +16,10 @@ from sklearn.model_selection import train_test_split
 from sklearn.linear_model import Lasso
 from sklearn.preprocessing import StandardScaler
 
->>>>>>> bbbb1e8 (feat: add PCA/Lasso modeling pipeline and improve regression evaluation)
 import pandas as pd
 import numpy as np
 
 
-<<<<<<< HEAD
-dataset = data.obtine_date_procesate()
-dataset.T.to_csv("processed_data.csv", index=False)
-dataset = dataset.to_numpy().astype(float)
-print(dataset)
-print(dataset.shape)
-
-=======
 df = obtine_date_procesat()
 print(df.head())
 
@@ -42,7 +28,6 @@ X_train = train.drop(columns=["Gleason Group"])
 y_train = train["Gleason Group"]
 X_test = test.drop(columns=["Gleason Group"])
 y_test = test["Gleason Group"]
->>>>>>> bbbb1e8 (feat: add PCA/Lasso modeling pipeline and improve regression evaluation)
 
 
 

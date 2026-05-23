@@ -54,10 +54,6 @@ def grid_metrics_random_forest(data_list: list):
     return rows
 
 
-def grid_metrics_random_forest_model(data_list: list):
-    return grid_metrics_random_forest(data_list)
-
-
 
 
 

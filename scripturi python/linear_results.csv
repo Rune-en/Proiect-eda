@@ -1,2 +1,0 @@
-dimension_reduction_type,model,scores
-Lasso,Linear Regression,"{'mean_squared_error': 6.289853946863547, 'mean_absolute_error': 2.025873466314497, 'f1_score': 0.19835410041394994, 'accuracy_score': 0.20909090909090908}"

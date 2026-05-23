@@ -1,2 +1,0 @@
-dimension_reduction_type,model,scores
-PCA,Linear Regression,"{'mean_squared_error': 1.786542599528971, 'mean_absolute_error': 1.0529633783331707, 'f1_score': 0.37858189761143785, 'accuracy_score': 0.36363636363636365}"

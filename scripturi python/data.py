@@ -42,7 +42,3 @@ def obtine_date_procesat():
     df = df.dropna(axis=0, how="any")
     df = df.astype(float)
     return df
-
-
-def obtine_date_procesate():
-    return obtine_date_procesat()

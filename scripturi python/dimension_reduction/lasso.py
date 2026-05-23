@@ -15,8 +15,3 @@ def reduce_dimensionality_lasso(X, y, alpha=0.01, max_iter=10000):
 
     
     return  selected_features
-
-
-def genereaza_date_reduse_lasso(predictors, target, alpha=0.01, max_iter=10000):
-    selected = reduce_dimensionality_lasso(predictors, target, alpha=alpha, max_iter=max_iter)
-    return predictors[:, selected], selected

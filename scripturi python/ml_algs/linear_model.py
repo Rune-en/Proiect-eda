@@ -30,7 +30,7 @@ def grid_metrics_linear_model(data_list: list):
     mse = mean_squared_error(data_list['Test_Target'], predictions)
     mae = mean_absolute_error(data_list['Test_Target'], predictions)
     f1 = f1_score(y_true, pred_classes, average='weighted', zero_division=0)
-    accuracy = accuracy_score(y_true, pred_classes)
+    accuracy = accuracy_score(data_list['Test_Target'], predictions)
 
 
     return_object = {

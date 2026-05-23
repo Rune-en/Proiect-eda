@@ -9,7 +9,7 @@ decision_tree_parameters = {
 '''
 data list sa contina obiecte de tipul:
 {
-    'name': "PCA -  20 features - variance 95%", || {"name": "PCA", "features": 20, "variance": 0.95}
+    'name': -
     'Train_Predictors': -
     'Train_Target': -
     'Test_Predictors': -
@@ -18,7 +18,7 @@ data list sa contina obiecte de tipul:
 
 '''
 
-def grid_metrics_decision_tree_model(data_list: list):
+def grid_metrics_decision_tree(data_list: list):
     rows = []
     
     for max_depth in decision_tree_parameters['max_depth']:
