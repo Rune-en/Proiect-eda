@@ -1,4 +1,12 @@
 *.pyc
+__pycache__/
 .venv/
-venv
 venv/
+.env
+*.egg-info/
+dist/
+build/
+.pytest_cache/
+.coverage
+htmlcov/
+processed_data.csv

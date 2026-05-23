@@ -1,0 +1,4 @@
+dimension_reduction_type,model,mean_squared_error,mean_absolute_error,f1_score,accuracy_score
+"Lasso (alpha=1.0, top-100)",Linear Regression,2.2467895657763224,1.176644015175386,0.26656237425713386,0.2545454545454545
+"Ridge (alpha=1.0, top-100)",Linear Regression,3.066318473616797,1.3975445630432723,0.22643678901743416,0.21818181818181817
+PCA (n_components=50),Linear Regression,2.0888890038104924,1.1328101068501804,0.29165457951318124,0.3
