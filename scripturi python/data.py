@@ -35,7 +35,7 @@ def obtine_date_procesat():
 
     print("Data shape before dropping low variability columns:", df.shape)
     #drop rows with little variablility
-    df = df.loc[:, df.nunique() > 100]
+    df = df.loc[:, df.nunique() > 200]
     df = df.apply(pd.to_numeric, errors='coerce')
     df["Gleason Group"] = a
     print("Data shape after dropping low variability columns:", df.shape)

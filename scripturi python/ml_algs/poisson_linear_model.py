@@ -1,13 +1,10 @@
-poisson_linear_model_parameters = {
-    'alpha': [0.0, 0.001, 0.01, 0.1, 0.5, 1.0, 5.0, 10.0]
-}
-
 import numpy as np
 from sklearn.linear_model import PoissonRegressor
-from sklearn.metrics import mean_squared_error, f1_score, mean_absolute_error, accuracy_score
+from sklearn.metrics import mean_squared_error, f1_score, mean_absolute_error, accuracy_score, cohen_kappa_score
+from sklearn.model_selection import train_test_split
 from sklearn.pipeline import make_pipeline
 from sklearn.preprocessing import StandardScaler
-import matplotlib.pyplot as plt
+from .plot_confusion_matrix import plot_CM, within_1_acc
 import time
 
 '''
@@ -22,70 +19,76 @@ data list sa contina obiecte de tipul:
 
 '''
 
-def grid_metrics_poisson_linear_model(data_list: dict):
+poisson_linear_model_parameters = {
+    'alpha': [0.0, 0.001, 0.01, 0.1, 0.5, 1.0, 5.0, 10.0]
+}
+
+
+def grid_metrics_poisson_linear_model(data_list: dict, smote=False):
     rows = []
     best_alpha = None
-    best_mae = float('inf')
+    best_kappa = -1
+
+    train_X, val_X, train_y, val_y = train_test_split(data_list['Train_Predictors'], data_list['Train_Target'], test_size=0.25, random_state=42)
+
     for alpha in poisson_linear_model_parameters['alpha']:
-        start_time = time.time()
+        
         model = make_pipeline(
             StandardScaler(),
             PoissonRegressor(alpha=alpha, max_iter=2000)
         )
 
-        model.fit(data_list['Train_Predictors'], data_list['Train_Target'])
+        model.fit(train_X, train_y)
 
-        y_true = data_list['Test_Target'].astype(int)
+        y_true = val_y.astype(int)
 
-        predictions = model.predict(data_list['Test_Predictors'])
-        predictions = np.clip(predictions, int(y_true.min()), int(y_true.max()))
-
+        predictions = model.predict(val_X)
         pred_classes = np.rint(predictions).astype(int)
         pred_classes = np.clip(pred_classes, int(y_true.min()), int(y_true.max()))
 
-        mse = mean_squared_error(data_list['Test_Target'], predictions)
-        mae = mean_absolute_error(data_list['Test_Target'], predictions)
-        f1 = f1_score(y_true, pred_classes, average='weighted', zero_division=0)
-        accuracy = accuracy_score(y_true, pred_classes)
-        
-        if mae < best_mae:
-            best_mae = mae
+        cohen_kappa = cohen_kappa_score(y_true, pred_classes, weights='quadratic')
+
+        if cohen_kappa > best_kappa:
+            best_kappa = cohen_kappa
             best_alpha = alpha
 
-        end_time = time.time()
-        return_object = {
-            'dimension_reduction_type': data_list['name'],
-            'n_features': data_list['Train_Predictors'].shape[1],
-            'model': 'Poisson Regression',
-            'alpha': alpha,
-            'mean_squared_error': mse,
-            'mean_absolute_error': mae,
-            'f1_score': f1,
-            'accuracy_score': accuracy,
-            'prediction_std': float(np.std(predictions)),
-            'execution_time_seconds': end_time - start_time
-        }
-
-        #plot predictions vs true values
-
-    rows.append(return_object)
-
+    start_time = time.time()
+    
     model = make_pipeline(
         StandardScaler(),
         PoissonRegressor(alpha=best_alpha, max_iter=2000))
     model.fit(data_list['Train_Predictors'], data_list['Train_Target'])
-    predictions = model.predict(data_list['Test_Predictors'])
-    predictions = np.clip(predictions, int(y_true.min()), int(y_true.max()))
 
-    plt.figure(figsize=(5, 5))
-    plt.scatter(y_true, predictions, alpha=0.2, s=100)
-    plt.plot([y_true.min(), y_true.max()], [y_true.min(), y_true.max()], 'r--')
-    plt.xlabel('True Values')
-    plt.ylabel('Predicted Values')
-    plt.title(f'Poisson Regression Predictions (alpha={best_alpha})')
-    plt.grid()
-    plt.savefig(f'poisson_predictions_{data_list["name"]}_alpha_{best_alpha}.png')
-    plt.close()
+    predictions = model.predict(data_list['Test_Predictors'])
+    pred_classes = np.rint(predictions).astype(int)
+    pred_classes = np.clip(pred_classes, int(y_true.min()), int(y_true.max()))
+    y_true = data_list['Test_Target'].astype(int)
+
+    mse = mean_squared_error(data_list['Test_Target'], pred_classes)
+    mae = mean_absolute_error(data_list['Test_Target'], pred_classes)
+    f1 = f1_score(y_true, pred_classes, average='weighted', zero_division=0)
+    accuracy = accuracy_score(y_true, pred_classes)
+    w1acc = within_1_acc(y_true, pred_classes)
+    cohen_kappa = cohen_kappa_score(y_true, pred_classes, weights='quadratic')
+
+    end_time = time.time()
+    return_object = {
+        'dimension_reduction_type': data_list['name'],
+        'n_features': data_list['Train_Predictors'].shape[1],
+        'model': 'Poisson Regression',
+        'parameters': f'alpha={best_alpha}',
+        'mean_squared_error': mse,
+        'mean_absolute_error': mae,
+        'f1_score': f1,
+        'accuracy_score': accuracy,
+        'cohen_kappa': cohen_kappa,
+        'within_1_accuracy': w1acc,
+        'execution_time_seconds': end_time - start_time
+    }
+
+    rows.append(return_object)
+
+    plot_CM(forwhom=f'CM_Poisson_Regression_{data_list["name"]}', true=y_true, pred=pred_classes, smote=smote)
 
     return rows
 
