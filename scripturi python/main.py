@@ -2,22 +2,24 @@ import os
 os.environ["LOKY_MAX_CPU_COUNT"] = "8"
 
 from sklearn.decomposition import PCA
+from sklearn.linear_model import Ridge
+from sklearn.linear_model import Lasso
 
-from dimension_reduction import *
+from sklearn.model_selection import train_test_split
+
+from sklearn.pipeline import make_pipeline
+from sklearn.preprocessing import StandardScaler
+
 from ml_algs.decision_tree import grid_metrics_decision_tree
 from ml_algs.random_forest import grid_metrics_random_forest
 from ml_algs.linear_model import grid_metrics_linear_model
 from ml_algs.poisson_linear_model import grid_metrics_poisson_linear_model  
-
-from dimension_reduction. lasso import reduce_dimensionality_lasso
 from data import obtine_date_procesat
-from sklearn.model_selection import train_test_split
-
-from sklearn.linear_model import Lasso
-from sklearn.preprocessing import StandardScaler
 
 import pandas as pd
 import numpy as np
+from matplotlib import pyplot as plt
+import time
 
 
 df = obtine_date_procesat()
@@ -30,14 +32,33 @@ X_test = test.drop(columns=["Gleason Group"])
 y_test = test["Gleason Group"]
 
 
+all_features = {
+    'name': 'All Features',
+    'Train_Predictors': X_train.values,
+    'Train_Target': y_train,
+    'Test_Predictors': X_test.values,
+    'Test_Target': y_test
+    }
+#############################   PCA dimensionality reduction   #############################
 
 pca = PCA(n_components=0.999)
 X_train_pca = pca.fit_transform(X_train)
 X_test_pca = pca.transform(X_test)
 
-print("PCA - explained variance ratio:", pca.explained_variance_ratio_)
+"""X_train_pca = pca.fit_transform(StandardScaler().fit_transform(X_train))
+X_test_pca = pca.transform(StandardScaler().fit_transform(X_test))"""
 
-data = {
+plt.figure(figsize=(5, 5))
+plt.plot(np.cumsum(pca.explained_variance_ratio_), marker='o')
+plt.xlabel('Number of Components')
+plt.ylabel('Cumulative Explained Variance')
+plt.title('PCA Explained Variance Ratio')
+plt.grid()
+plt.savefig('pca_explained_variance_ratio.png')
+plt.close()
+
+
+data_pca = {
     'name': 'PCA',
     'Train_Predictors': X_train_pca,
     'Train_Target': y_train,
@@ -45,20 +66,15 @@ data = {
     'Test_Target': y_test
     }
 
-poisson = grid_metrics_poisson_linear_model(data_list=data)
-poisson_df = pd.DataFrame(poisson)
-poisson_df.to_csv("poisson_linear_model_results.csv", index=False)
-
-linear = grid_metrics_linear_model(data_list=data)
-linear_df = pd.DataFrame(linear)
-linear_df.to_csv("linear_model_results.csv", index=False)
+#############################   Lasso dimensionality reduction   #############################
 
 lasso = Lasso(alpha=0.01, max_iter=10000, random_state=42)
 lasso.fit(X_train, y_train)
+#lasso.fit(StandardScaler().fit_transform(X_train), y_train)
 
 selected_features = np.where(lasso.coef_ != 0)[0]
 
-data = {
+data_lasso = {
     'name': 'Lasso',
     'Train_Predictors': X_train.values[:, selected_features],
     'Train_Target': y_train,
@@ -66,10 +82,41 @@ data = {
     'Test_Target': y_test
     }
 
-lasso_results = grid_metrics_poisson_linear_model(data_list=data)
-lasso_df = pd.DataFrame(lasso_results)
-lasso_df.to_csv("lasso_results.csv", index=False)
+#############################   Ridge dimensionality reduction   #############################
 
-linear_results = grid_metrics_linear_model(data_list=data)
-linear_df = pd.DataFrame(linear_results)
-linear_df.to_csv("linear_results.csv", index=False)
+#model = Ridge(alpha=1.0)
+# here it's probably better to use a pipeline with standardization, since Ridge is sensitive to feature scales
+model = make_pipeline(StandardScaler(), Ridge(alpha=1.0))
+
+model.fit(X_train, y_train)
+predictions = model.predict(X_train)
+
+#coefs = ridge.coef_
+coefs = model.named_steps['ridge'].coef_
+
+top_idx = np.argsort(np.abs(coefs))[::-1][:100]
+selected = top_idx
+
+data_ridge = {
+    'name': 'Ridge',
+    'Train_Predictors': X_train.values[:, selected],
+    'Train_Target': y_train,
+    'Test_Predictors': X_test.values[:, selected],
+    'Test_Target': y_test
+    }
+
+
+all_results = []
+start_time = time.time()
+for data in [data_pca, data_lasso, data_ridge, all_features]:
+    for model in [grid_metrics_linear_model, grid_metrics_poisson_linear_model,
+                  grid_metrics_decision_tree, grid_metrics_random_forest]:
+        results = model(data_list=data)
+        df_results = pd.DataFrame(results)
+        #df_results.to_csv(f"{data['name']}_{model.__name__}_results.csv", index=False)
+        all_results.extend(results)
+        end_time = time.time()
+        print(f"{model.__name__[13:]} on {data['name']}: {end_time - start_time:.2f} seconds")
+
+df_all_results = pd.DataFrame(all_results)
+df_all_results.to_csv("all_results.csv", index=False)
