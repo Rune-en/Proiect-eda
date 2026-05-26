@@ -613,3 +613,59 @@ With `alpha=1.0, l1_ratio=0.5` on 19,962 features, ElasticNet produced only **13
 | svr_model         | Ridge->PCA (top-100, 95%var) + SMOTE      | 0.316±0.102  | 0.584      | 0.695    | 1.098 |
 | svr_model         | Lasso->PCA (top-100, 95%var) + SMOTE      | 0.292±0.101  | 0.570      | 0.685    | 1.113 |
 | svr_model         | ElasticNet->PCA (top-200, 95%var) + SMOTE | 0.270±0.126  | 0.560      | 0.683    | 1.141 |
+
+
+---
+
+## Step 15 – Cv5 Smote Vt0P10
+
+**Date:** 2026-05-26  
+**Archive:** `results\step15_cv5_smote_vt0p10`  
+**Config:** `USE_CV=True  USE_SMOTE=True  REMOVE_LOW_VARIANCE=True  VARIANCE_THRESHOLD=0.1`
+
+### Best result per model (mean ± std across CV folds)
+
+| Model             | Reduction                                 | R² mean±std  | Spearman ρ | Within±1 | MAE   | QWK   |
+| ----------------- | ----------------------------------------- | ------------ | ---------- | -------- | ----- | ----- |
+| elasticnet_model  | PCA (n_components=50) + SMOTE             | 0.520±0.066  | 0.709      | 0.836    | 0.865 | 0.588 |
+| elasticnet_model  | ElasticNet->PCA (top-200, 95%var) + SMOTE | 0.452±0.065  | 0.676      | 0.803    | 0.947 | 0.540 |
+| elasticnet_model  | Lasso (alpha=1.0, top-100) + SMOTE        | 0.406±0.075  | 0.645      | 0.767    | 0.980 | 0.514 |
+| elasticnet_model  | Lasso->PCA (top-100, 95%var) + SMOTE      | 0.404±0.074  | 0.627      | 0.769    | 0.979 | 0.487 |
+| elasticnet_model  | ElasticNet (top-200, l1r=0.5) + SMOTE     | 0.394±0.071  | 0.646      | 0.785    | 0.998 | 0.543 |
+| elasticnet_model  | Ridge->PCA (top-100, 95%var) + SMOTE      | 0.388±0.036  | 0.645      | 0.789    | 0.985 | 0.516 |
+| elasticnet_model  | Ridge (alpha=1.0, top-100) + SMOTE        | 0.332±0.073  | 0.620      | 0.747    | 1.047 | 0.471 |
+| gradient_boosting | ElasticNet (top-200, l1r=0.5) + SMOTE     | 0.464±0.043  | 0.670      | 0.805    | 0.945 | 0.521 |
+| gradient_boosting | PCA (n_components=50) + SMOTE             | 0.454±0.077  | 0.662      | 0.801    | 0.944 | 0.511 |
+| gradient_boosting | Ridge (alpha=1.0, top-100) + SMOTE        | 0.439±0.054  | 0.645      | 0.785    | 0.958 | 0.487 |
+| gradient_boosting | Lasso (alpha=1.0, top-100) + SMOTE        | 0.429±0.070  | 0.648      | 0.791    | 0.965 | 0.484 |
+| gradient_boosting | ElasticNet->PCA (top-200, 95%var) + SMOTE | 0.415±0.076  | 0.627      | 0.785    | 0.980 | 0.454 |
+| gradient_boosting | Lasso->PCA (top-100, 95%var) + SMOTE      | 0.351±0.054  | 0.572      | 0.762    | 1.037 | 0.375 |
+| gradient_boosting | Ridge->PCA (top-100, 95%var) + SMOTE      | 0.304±0.053  | 0.533      | 0.724    | 1.093 | 0.351 |
+| linear_model      | PCA (n_components=50) + SMOTE             | 0.518±0.065  | 0.711      | 0.838    | 0.862 | 0.598 |
+| linear_model      | ElasticNet->PCA (top-200, 95%var) + SMOTE | 0.425±0.047  | 0.668      | 0.785    | 0.967 | 0.550 |
+| linear_model      | Lasso->PCA (top-100, 95%var) + SMOTE      | 0.398±0.069  | 0.633      | 0.767    | 0.989 | 0.496 |
+| linear_model      | Ridge->PCA (top-100, 95%var) + SMOTE      | 0.362±0.047  | 0.639      | 0.780    | 1.006 | 0.511 |
+| linear_model      | Lasso (alpha=1.0, top-100) + SMOTE        | 0.326±0.103  | 0.617      | 0.756    | 1.052 | 0.508 |
+| linear_model      | Ridge (alpha=1.0, top-100) + SMOTE        | 0.259±0.078  | 0.595      | 0.729    | 1.102 | 0.456 |
+| linear_model      | ElasticNet (top-200, l1r=0.5) + SMOTE     | -0.013±0.111 | 0.529      | 0.670    | 1.272 | 0.420 |
+| poisson_model     | PCA (n_components=50) + SMOTE             | 0.362±0.125  | 0.685      | 0.729    | 1.040 | 0.435 |
+| poisson_model     | Lasso (alpha=1.0, top-100) + SMOTE        | 0.284±0.118  | 0.615      | 0.741    | 1.076 | 0.444 |
+| poisson_model     | ElasticNet->PCA (top-200, 95%var) + SMOTE | 0.284±0.103  | 0.627      | 0.691    | 1.114 | 0.381 |
+| poisson_model     | Lasso->PCA (top-100, 95%var) + SMOTE      | 0.257±0.090  | 0.601      | 0.685    | 1.129 | 0.364 |
+| poisson_model     | Ridge->PCA (top-100, 95%var) + SMOTE      | 0.190±0.127  | 0.598      | 0.691    | 1.154 | 0.374 |
+| poisson_model     | ElasticNet (top-200, l1r=0.5) + SMOTE     | 0.188±0.349  | 0.622      | 0.743    | 1.105 | 0.476 |
+| poisson_model     | Ridge (alpha=1.0, top-100) + SMOTE        | 0.162±0.307  | 0.612      | 0.730    | 1.130 | 0.430 |
+| random_forest     | ElasticNet (top-200, l1r=0.5) + SMOTE     | 0.459±0.051  | 0.665      | 0.799    | 0.950 | 0.486 |
+| random_forest     | PCA (n_components=50) + SMOTE             | 0.427±0.092  | 0.637      | 0.794    | 0.957 | 0.497 |
+| random_forest     | Ridge (alpha=1.0, top-100) + SMOTE        | 0.410±0.055  | 0.621      | 0.776    | 0.987 | 0.435 |
+| random_forest     | ElasticNet->PCA (top-200, 95%var) + SMOTE | 0.406±0.083  | 0.614      | 0.775    | 0.989 | 0.437 |
+| random_forest     | Lasso (alpha=1.0, top-100) + SMOTE        | 0.387±0.070  | 0.611      | 0.776    | 1.007 | 0.420 |
+| random_forest     | Lasso->PCA (top-100, 95%var) + SMOTE      | 0.336±0.054  | 0.552      | 0.749    | 1.056 | 0.335 |
+| random_forest     | Ridge->PCA (top-100, 95%var) + SMOTE      | 0.288±0.069  | 0.521      | 0.724    | 1.104 | 0.306 |
+| svr_model         | Ridge (alpha=1.0, top-100) + SMOTE        | 0.401±0.086  | 0.644      | 0.759    | 1.009 | 0.406 |
+| svr_model         | ElasticNet (top-200, l1r=0.5) + SMOTE     | 0.396±0.095  | 0.647      | 0.761    | 1.016 | 0.425 |
+| svr_model         | Lasso (alpha=1.0, top-100) + SMOTE        | 0.387±0.090  | 0.632      | 0.752    | 1.025 | 0.392 |
+| svr_model         | PCA (n_components=50) + SMOTE             | 0.372±0.136  | 0.645      | 0.754    | 1.016 | 0.430 |
+| svr_model         | Ridge->PCA (top-100, 95%var) + SMOTE      | 0.316±0.102  | 0.584      | 0.695    | 1.098 | 0.323 |
+| svr_model         | Lasso->PCA (top-100, 95%var) + SMOTE      | 0.292±0.101  | 0.570      | 0.685    | 1.113 | 0.328 |
+| svr_model         | ElasticNet->PCA (top-200, 95%var) + SMOTE | 0.270±0.126  | 0.560      | 0.683    | 1.141 | 0.304 |

@@ -15,7 +15,7 @@ Each element of ``data_list`` must be a dict with keys:
 
 import numpy as np
 from scipy.stats import spearmanr
-from sklearn.metrics import mean_absolute_error, mean_squared_error, r2_score
+from sklearn.metrics import cohen_kappa_score, mean_absolute_error, mean_squared_error, r2_score
 from sklearn.preprocessing import StandardScaler
 from sklearn.svm import SVR
 from sklearn.utils.class_weight import compute_sample_weight
@@ -85,6 +85,12 @@ def grid_search_svr(data_list: list[dict]) -> list[dict]:
                             )[0]),
                             "within_1_acc": float(np.mean(
                                 np.abs(rounded_predictions - split["test_target"]) <= 1
+                            )),
+                            "qwk": float(cohen_kappa_score(
+                                split["test_target"],
+                                np.clip(rounded_predictions, 1, 5),
+                                weights="quadratic",
+                                labels=[1, 2, 3, 4, 5],
                             )),
                         },
                     }

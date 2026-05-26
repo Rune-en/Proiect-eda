@@ -74,14 +74,19 @@ def _config_label() -> str:
     return "_".join(parts)
 
 
-def _archive(step_n: int, label: str, results_dir: str) -> str:
-    """Copy results/*.csv and results/reductions/*.csv into a new archive dir."""
+def _archive(step_n: int, label: str, results_dir: str, model_names: list[str]) -> str:
+    """Copy results/*.csv and results/reductions/*.csv into a new archive dir.
+
+    Only model CSVs whose names appear in *model_names* are copied, so stale
+    files from disabled models (e.g. decision_tree) are never carried forward.
+    """
     dest = os.path.join(results_dir, f"step{step_n:02d}_{label}")
     dest_red = os.path.join(dest, "reductions")
     os.makedirs(dest_red, exist_ok=True)
 
+    allowed = {f"{m}.csv" for m in model_names}
     for fname in os.listdir(results_dir):
-        if fname.endswith(".csv"):
+        if fname.endswith(".csv") and fname in allowed:
             shutil.copy2(os.path.join(results_dir, fname), dest)
 
     src_red = os.path.join(results_dir, "reductions")
@@ -102,7 +107,7 @@ def _summary_table(archive_dir: str) -> str:
     achieves the highest mean R².  All reductions are shown, sorted descending
     by R² mean.
     """
-    _COLS = ("r2", "spearman_r", "within_1_acc", "mae")
+    _COLS = ("r2", "spearman_r", "within_1_acc", "mae", "qwk")
     model_rows: list[dict] = []
 
     for fname in sorted(os.listdir(archive_dir)):
@@ -119,9 +124,9 @@ def _summary_table(archive_dir: str) -> str:
         agg = (
             df.groupby("dimension_reduction_type")[list(_COLS)]
             .agg({"r2": ["mean", "std"], "spearman_r": "mean",
-                  "within_1_acc": "mean", "mae": "mean"})
+                  "within_1_acc": "mean", "mae": "mean", "qwk": "mean"})
         )
-        agg.columns = ["r2_mean", "r2_std", "spearman_mean", "within1_mean", "mae_mean"]
+        agg.columns = ["r2_mean", "r2_std", "spearman_mean", "within1_mean", "mae_mean", "qwk_mean"]
         agg = agg.sort_values("r2_mean", ascending=False).reset_index()
 
         for _, row in agg.iterrows():
@@ -133,12 +138,13 @@ def _summary_table(archive_dir: str) -> str:
                 "Spearman ρ": f"{row['spearman_mean']:.3f}",
                 "Within±1": f"{row['within1_mean']:.3f}",
                 "MAE": f"{row['mae_mean']:.3f}",
+                "QWK": f"{row['qwk_mean']:.3f}",
             })
 
     if not model_rows:
         return "_No results found._"
 
-    headers = ["Model", "Reduction", "R² mean±std", "Spearman ρ", "Within±1", "MAE"]
+    headers = ["Model", "Reduction", "R² mean±std", "Spearman ρ", "Within±1", "MAE", "QWK"]
     widths = {
         h: max(len(h), max(len(str(r.get(h, ""))) for r in model_rows))
         for h in headers
@@ -196,7 +202,7 @@ def main() -> None:
     # ------------------------------------------------------------------
     step_n = _detect_next_step(settings.RESULTS_DIR)
     label = _config_label()
-    archive_dir = _archive(step_n, label, settings.RESULTS_DIR)
+    archive_dir = _archive(step_n, label, settings.RESULTS_DIR, list(results.keys()))
     _append_md(step_n, label, archive_dir, "docs/big_eda_status.md")
 
     logger.info("Pipeline finished successfully.")
