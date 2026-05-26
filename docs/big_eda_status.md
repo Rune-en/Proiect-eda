@@ -669,3 +669,16 @@ With `alpha=1.0, l1_ratio=0.5` on 19,962 features, ElasticNet produced only **13
 | svr_model         | Ridge->PCA (top-100, 95%var) + SMOTE      | 0.316±0.102  | 0.584      | 0.695    | 1.098 | 0.323 |
 | svr_model         | Lasso->PCA (top-100, 95%var) + SMOTE      | 0.292±0.101  | 0.570      | 0.685    | 1.113 | 0.328 |
 | svr_model         | ElasticNet->PCA (top-200, 95%var) + SMOTE | 0.270±0.126  | 0.560      | 0.683    | 1.141 | 0.304 |
+
+### Key findings
+
+**First run with Quadratic Weighted Kappa (QWK) as the primary ordinal evaluation metric.**
+
+- **Best overall: Linear Regression + PCA(n=50) + SMOTE** — QWK=0.598, R²=0.518, Spearman ρ=0.711, Within±1=83.8%, MAE=0.862. This is the strongest result across all 15 steps.
+- **QWK confirms the R²/Spearman ranking**: linear_model ≈ elasticnet > gradient_boosting > random_forest > poisson > svr. The ordinal metric does not overturn any model-level conclusions.
+- **PCA(n=50) dominates for linear models**: Linear and ElasticNet both peak at PCA(n=50)+SMOTE. The 50 principal components retain ~78% of variance after the variance-threshold filter and appear to be the ideal balance of information compression and noise suppression for linear methods.
+- **Ensemble methods prefer raw ElasticNet features**: Gradient Boosting and Random Forest peak on `ElasticNet(top-200)+SMOTE` (QWK=0.521 and R²=0.459 respectively), not on PCA. Tree-based models likely benefit from the sparser, interpretable feature set over PCA rotations.
+- **SVR and Poisson are the weakest models**: SVR peaks at QWK=0.430 (Ridge+SMOTE); Poisson is anomalous — its best QWK=0.476 comes from `ElasticNet(top-200)` despite having R²=0.188, indicating the model assigns ordinal ranks reasonably despite poor absolute fit.
+- **Variance threshold filter (vt=0.10) is beneficial**: Removing 8,523 near-zero-variance genes (keeping 11,439/19,962) consistently improves ensemble models vs. Step 10 (SMOTE only, no filter). GBM improved from R²=0.447 (Step 13, no SMOTE, no filter) to R²=0.464 with lower std (0.043 vs 0.073).
+- **Decision Tree removed**: Disabled in this step after consistently producing negative or near-zero R² across all reductions and configurations. Its removal reduced runtime from ~47 min to ~47 min (dominated by GBM and RF grid searches).
+- **Clinical interpretation**: Linear model at Within±1=83.8% means 84 out of 100 Gleason grade group predictions are within one grade group of the true label — a clinically acceptable tolerance for a gene-expression-only model without pathology images.
