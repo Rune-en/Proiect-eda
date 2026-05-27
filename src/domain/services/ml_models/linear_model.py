@@ -19,6 +19,7 @@ import numpy as np
 from scipy.stats import spearmanr
 from sklearn.linear_model import LinearRegression
 from sklearn.metrics import (
+    cohen_kappa_score,
     mean_absolute_error,
     mean_squared_error,
     r2_score,
@@ -78,6 +79,12 @@ def grid_search_linear_model(data_list: list[dict]) -> list[dict]:
                     )[0]),
                     "within_1_acc": float(np.mean(
                         np.abs(rounded_predictions - split["test_target"]) <= 1
+                    )),
+                    "qwk": float(cohen_kappa_score(
+                        split["test_target"],
+                        np.clip(rounded_predictions, 1, 5),
+                        weights="quadratic",
+                        labels=[1, 2, 3, 4, 5],
                     )),
                 },
             }
