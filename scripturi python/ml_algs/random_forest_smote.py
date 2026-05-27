@@ -22,7 +22,7 @@ data list sa contina obiecte de tipul:
 
 '''
 
-def grid_metrics_random_forest(data_list: list):
+def random_forest(data_list: list):
     rows = []
     best_params = None
     best_mae = float('inf')

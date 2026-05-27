@@ -24,7 +24,7 @@ poisson_linear_model_parameters = {
 }
 
 
-def grid_metrics_poisson_linear_model(data_list: dict, smote=False):
+def poisson_linear_model(data_list: dict, smote=False):
     rows = []
     best_alpha = None
     best_kappa = -1
@@ -43,6 +43,7 @@ def grid_metrics_poisson_linear_model(data_list: dict, smote=False):
         y_true = val_y.astype(int)
 
         predictions = model.predict(val_X)
+        predictions = np.nan_to_num(predictions, nan=0.0)
         pred_classes = np.rint(predictions).astype(int)
         pred_classes = np.clip(pred_classes, int(y_true.min()), int(y_true.max()))
 
@@ -54,16 +55,16 @@ def grid_metrics_poisson_linear_model(data_list: dict, smote=False):
 
     start_time = time.time()
     
-    model = make_pipeline(
-        StandardScaler(),
-        PoissonRegressor(alpha=best_alpha, max_iter=2000))
+    model = make_pipeline(StandardScaler(),PoissonRegressor(alpha=best_alpha, max_iter=2000))
     model.fit(data_list['Train_Predictors'], data_list['Train_Target'])
 
-    predictions = model.predict(data_list['Test_Predictors'])
-    pred_classes = np.rint(predictions).astype(int)
-    pred_classes = np.clip(pred_classes, int(y_true.min()), int(y_true.max()))
     y_true = data_list['Test_Target'].astype(int)
 
+    predictions = model.predict(data_list['Test_Predictors'])
+    predictions = np.nan_to_num(predictions, nan=0.0)
+    pred_classes = np.rint(predictions).astype(int)
+    pred_classes = np.clip(pred_classes, int(y_true.min()), int(y_true.max()))
+    
     mse = mean_squared_error(data_list['Test_Target'], pred_classes)
     mae = mean_absolute_error(data_list['Test_Target'], pred_classes)
     f1 = f1_score(y_true, pred_classes, average='weighted', zero_division=0)

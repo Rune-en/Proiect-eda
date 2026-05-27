@@ -23,7 +23,7 @@ data list sa contina obiecte de tipul:
 
 '''
 
-def grid_metrics_random_forest(data_list: list, smote=False):
+def random_forest(data_list: list, smote=False):
     rows = []
     best_params = None
     best_kappa = -1
@@ -49,11 +49,14 @@ def grid_metrics_random_forest(data_list: list, smote=False):
     start_time = time.time()
     model = RandomForestClassifier(n_estimators=best_params[0], max_depth=best_params[1], min_samples_split=best_params[2])
     model.fit(data_list['Train_Predictors'], data_list['Train_Target'])
+
+    y_true = data_list['Test_Target'].astype(int)
+    
     predictions = model.predict(data_list['Test_Predictors'])
     pred_classes = np.rint(predictions).astype(int)
     pred_classes = np.clip(pred_classes, int(y_true.min()), int(y_true.max()))
 
-    y_true = data_list['Test_Target'].astype(int)
+
 
     mse = mean_squared_error(data_list['Test_Target'], pred_classes)
     mae = mean_absolute_error(data_list['Test_Target'], pred_classes)

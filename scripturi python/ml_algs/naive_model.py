@@ -15,7 +15,7 @@ data list sa contina obiecte de tipul:
 
 '''
 
-def grid_metrics_naive_model(data_list: list, smote=False):
+def naive_model(data_list: list, smote=False):
     start_time = time.time()
 
     rows = []

@@ -17,7 +17,7 @@ data list sa contina obiecte de tipul:
 
 '''
 
-def grid_metrics_linear_model(data_list: list, smote=False):
+def linear_model(data_list: list, smote=False):
     start_time = time.time()
 
     rows = []
