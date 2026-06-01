@@ -37,7 +37,7 @@ if not os.path.exists('SMOTE'):
 if not os.path.exists('NoSMOTE'):
     os.makedirs('NoSMOTE')
 
-for smote  in [False, True]:
+for smote  in [True, False]:
     first_time = time.time()
     df = obtine_date_procesat()
     print(df.head())
@@ -120,7 +120,9 @@ for smote  in [False, True]:
         'Test_Predictors': X_test_pca,
         'Test_Target': y_test
         }
-
+    print(f"Cumulative explained variance for PCA50: {np.sum(pca.explained_variance_ratio_[:50]):.6f}")
+    print(f"Cumulative explained variance for PCA100: {np.sum(pca.explained_variance_ratio_[:100]):.6f}")
+    print(f"Cumulative explained variance for PCA300: {np.sum(pca.explained_variance_ratio_[:300]):.6f}")
     #############################   Lasso dimensionality reduction   #############################
     st_tm = time.time()
     lasso_pipe = make_pipeline(
